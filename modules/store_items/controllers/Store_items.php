@@ -3,7 +3,7 @@ class Store_items extends Trongate {
     function display() {
         $url_string = $this->url->segment(3);
         // online shop, could have SEO url rewrites - be defensive by naming prob. default table
-        $data['item_obj'] = $this->model->get_one_where('url_string', 
+        $data['item_obj'] = $this->model->get_one_where('url_string',
             $url_string, 'store_items');
 
         /* DEBUG/USER ATTEMPTED NON-EXIST PRODUCT: */
@@ -30,30 +30,30 @@ class Store_items extends Trongate {
 
     function _get_item_pic_html($data) {
         $this->module('picture_uploader_multi');
-        
+
         $update_id = $data['item_obj']->id;
         $multi_uploader_settings = $this->_init_picture_uploader_multi_settings();
         // above (from 'picture_uploader_multi') = return of array
-        $data['gallery_pics'] = $this->picture_uploader_multi->_fetch_pictures($update_id, 
+        $data['gallery_pics'] = $this->picture_uploader_multi->_fetch_pictures($update_id,
             $multi_uploader_settings);
 
-        if (count($data['gallery_pics'])>10) {
+        if (count($data['gallery_pics'])>1) { // test 10 to force single pic
             $data['gallery_dir'] = BASE_URL.
                 $multi_uploader_settings['destination'].'/'.$update_id . '/';
             $item_pic_html = $this->view('item_gallery', $data, true); // true = ret. html string
         } else {
             // single picture
             if ($data['item_obj']->picture == '') {
-                $item_pic_html = $this->view('no_pic_available', $data, true);
+                $item_pic_html = $this->view('no_pic_available', $data, true); // T=ret. html str
             } else {
                 $single_picture_settings = $this->_init_picture_settings();
                 $picture = $data['item_obj']->picture;
                 $data['picture_path'] = BASE_URL.
                     $single_picture_settings['destination'].'/'.$update_id.'/'.$picture;
-                $item_pic_html = $this->view('single_item_pic', $data, true);
-            }  
+                $item_pic_html = $this->view('single_item_pic', $data, true); // T=ret. html str
+            }
         }
-        
+
         return $item_pic_html;
     }
 
@@ -66,7 +66,7 @@ class Store_items extends Trongate {
         return $data;
     }
 
-    function _init_picture_settings() { 
+    function _init_picture_settings() {
         $picture_settings['targetModule'] = 'store_items';
         $picture_settings['maxFileSize'] = 2000;
         $picture_settings['maxWidth'] = 1200;
